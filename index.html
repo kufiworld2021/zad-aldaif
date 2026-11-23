@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>زاد الضيف</title>
+<meta name="description" content="زاد الضيف هدايا تقدم بمحبة نجهزها ونوصلها لضيوف الرحمن نيابة عنك">
+<link rel="icon" href="img/logo-olive.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;700;800&family=Noto+Sans+Arabic:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--o:#425548;--od:#34443a;--iv:#f4efe6;--pa:#fbf8f3;--ca:#b88458;--ink:#2e3a33;--mu:#6b756e;--li:#e6ded1}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:#ebe5da;font-family:'Noto Sans Arabic',sans-serif;color:var(--ink);display:flex;flex-direction:column}
+button{font:inherit;cursor:pointer}
+.bar{background:var(--pa);border-bottom:1px solid var(--li);padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;position:relative;z-index:5}
+.brand{display:flex;align-items:center;gap:10px;font-family:'Noto Kufi Arabic';font-weight:700;color:var(--o);font-size:14px}
+.brand img{height:28px}
+.tabs{display:flex;gap:6px;overflow-x:auto;flex:1;scrollbar-width:none;padding:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:1px solid var(--li);background:#fff;border-radius:999px;padding:7px 14px;font-size:13px;white-space:nowrap;color:var(--ink)}
+.tab.on{background:var(--o);border-color:var(--o);color:var(--iv)}
+.seg{display:flex;background:#fff;border:1px solid var(--li);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;border-radius:999px;padding:6px 14px;font-size:13px;color:var(--mu);display:flex;gap:6px;align-items:center}
+.seg button.on{background:var(--iv);color:var(--o);font-weight:600}
+.seg svg{width:16px;height:16px}
+.stage{flex:1;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:0}
+.frame{border:0;background:#fff;width:100%;height:100%;display:block}
+.stage.mobile{padding:24px 12px}
+.stage.mobile .phone{width:390px;height:min(820px,calc(100vh - 120px));border-radius:42px;border:10px solid #2e3a33;overflow:hidden;box-shadow:0 30px 60px -30px rgba(46,58,51,.45);background:#fff;flex:none}
+.stage.web .phone{width:100%;height:100%}
+@media (max-width:720px){
+  .bar{gap:10px}
+  .brand span{display:none}
+  .tabs{order:3;flex-basis:100%}
+  .stage.mobile{padding:0}
+  .stage.mobile .phone{width:100%;height:100%;border:0;border-radius:0;box-shadow:none}
+}
+.phone{position:relative}
+.zl{position:absolute;inset:0;z-index:3;background:#f4efe6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .45s ease}
+.zl.off{opacity:0;pointer-events:none}
+.zl-logo{width:170px;height:96px;background:url(img/logo-olive.svg) center/contain no-repeat}
+.zl-bar{width:140px;height:3px;border-radius:9px;background:#ddd4c3;overflow:hidden;position:relative}
+.zl-bar::after{content:"";position:absolute;inset:0;width:45%;background:#b88458;border-radius:9px;animation:zlBar 1.3s ease-in-out infinite}
+@keyframes zlBar{0%{transform:translateX(110%)}100%{transform:translateX(-330%)}}
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <div class="brand"><img src="img/logo-olive.svg" alt="زاد الضيف"><span>معاينة متجر سلة</span></div>
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-p="home">الرئيسية</button>
+    <button class="tab" data-p="shop">كل المنتجات</button>
+    <button class="tab" data-p="product">صفحة المنتج</button>
+    <button class="tab" data-p="about">من نحن</button>
+    <button class="tab" data-p="policy">الاستبدال والاسترجاع</button>
+    <button class="tab" data-p="execution">التنفيذ والتوثيق</button>
+    <button class="tab" data-p="privacy">الخصوصية</button>
+    <button class="tab" data-p="terms">الشروط</button>
+    <button class="tab" data-p="faq">الأسئلة الشائعة</button>
+  </div>
+  <div class="seg" id="seg">
+    <button data-d="mobile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="7" y="3" width="10" height="18" rx="2"/></svg>جوال</button>
+    <button data-d="web" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="12" rx="2"/><path d="M8 20h8"/></svg>ويب</button>
+  </div>
+</div>
+
+<div class="stage web" id="stage"><div class="phone"><div class="zl" id="zl" aria-hidden="true"><div class="zl-logo"></div><div class="zl-bar"></div></div><iframe class="frame" id="frame" src="site.html#home" title="زاد الضيف"></iframe></div></div>
+
+<script>
+(function(){
+  var f=document.getElementById('frame'),st=document.getElementById('stage');
+  function zadBar(){try{var d=f.contentDocument,w=f.contentWindow;if(!d||!d.head)return;var s=d.getElementById('zad-scrollbar');if(!s){s=d.createElement('style');s.id='zad-scrollbar';d.head.appendChild(s)}
+    var top=0,el=d.elementFromPoint(Math.max(1,d.documentElement.clientWidth/2),2);
+    while(el&&el!==d.documentElement){var p=w.getComputedStyle(el).position;if(p==='fixed'||p==='sticky'){top=el.getBoundingClientRect().bottom;break}el=el.parentElement}
+    if(!top){var h=d.querySelector('header');if(h)top=h.getBoundingClientRect().bottom}
+    top=Math.max(0,Math.min(Math.round(top),300));
+    var bot=st.classList.contains('mobile')?22:0;
+    s.textContent='@supports not selector(::-webkit-scrollbar){html{scrollbar-width:thin;scrollbar-color:#425548 transparent}}::-webkit-scrollbar{width:6px;height:6px}::-webkit-scrollbar-track{background:transparent;margin-top:'+top+'px;margin-bottom:'+bot+'px}::-webkit-scrollbar-thumb{background:#425548;border-radius:999px}::-webkit-scrollbar-thumb:hover{background:#34443a}'}catch(e){}}
+  var zl=document.getElementById('zl'),zt=Date.now();
+  function zlOff(){setTimeout(function(){zl.classList.add('off')},Math.max(0,1400-(Date.now()-zt)))}
+  setTimeout(zlOff,6000);try{if(f.contentDocument&&f.contentDocument.readyState==='complete'&&f.contentDocument.body&&f.contentDocument.body.children.length)zlOff()}catch(e){}
+  f.addEventListener('load',function(){zlOff();zadBar();setTimeout(zadBar,600);try{f.contentWindow.addEventListener('resize',zadBar)}catch(e){}});zadBar();
+  var zcur='home',ztm;
+  function zlShow(){zl.style.transition='none';zl.classList.remove('off');void zl.offsetWidth;zl.style.transition='';clearTimeout(ztm);ztm=setTimeout(function(){zl.classList.add('off')},1000)}
+  document.querySelectorAll('.tab').forEach(function(t){t.onclick=function(){if(t.dataset.p!==zcur){zcur=t.dataset.p;zlShow()}f.contentWindow.location.hash=t.dataset.p}});
+  window.addEventListener('message',function(e){if(e.data&&e.data.zadPage){if(e.data.zadPage!==zcur){zcur=e.data.zadPage;if(zl.classList.contains('off'))zlShow()}document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.dataset.p===e.data.zadPage)})}});
+  document.querySelectorAll('#seg button').forEach(function(b){b.onclick=function(){document.querySelectorAll('#seg button').forEach(function(x){x.classList.toggle('on',x===b)});st.className='stage '+b.dataset.d;setTimeout(zadBar,60)}});
+})();
+</script>
+<script src="zad-head.js"></script>
+<script src="zad-banner.js"></script>
+<script src="zad-fix.js"></script>
+</body>
+</html>

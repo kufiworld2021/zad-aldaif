@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>زاد الضيف — معاينة المتجر</title>
+<style>
+/* ===== هيكل مبسط يحاكي ثيم رائد (للمعاينة فقط) ===== */
+*{box-sizing:border-box}
+html,body{margin:0}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer}
+.container{width:100%;max-width:1240px;margin:0 auto;padding:0 20px}
+.top-navbar{font-size:13px}
+.top-navbar .container{display:flex;align-items:center;gap:14px;height:44px}
+.top-navbar .tn-links{display:flex;gap:18px;white-space:nowrap}
+.top-navbar .header-search{flex:1;max-width:420px;margin-inline-start:auto}
+.s-search-input{width:100%;height:32px;border-radius:999px;padding:0 16px;font:inherit;font-size:13px}
+.main-nav-container{position:sticky;top:0;z-index:30}
+.main-nav-container .row{display:flex;align-items:center;justify-content:space-between;height:74px;gap:20px}
+.navbar-brand img{height:46px;width:auto}
+.main-menu{display:flex;gap:26px;list-style:none;margin:0;padding:0}
+.nav-icons{display:flex;gap:14px;align-items:center}
+.icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;border:1px solid #e6ded1;background:#fff;color:#425548;position:relative}
+.icon-btn svg{width:20px;height:20px}
+.s-cart-summary-count{position:absolute;top:-4px;inset-inline-end:-4px;width:18px;height:18px;border-radius:50%;font-size:11px;display:grid;place-items:center}
+.burger{display:none}
+main{min-height:60vh;padding-bottom:30px}
+.grid-products{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.s-product-card-entry{display:flex;flex-direction:column}
+.s-product-card-image{aspect-ratio:1/1;overflow:hidden;position:relative}
+.s-product-card-image img{width:100%;height:100%;object-fit:cover}
+.s-product-card-content{display:flex;flex-direction:column;gap:6px;flex:1}
+.s-product-card-content-title{margin:0}
+.s-product-card-content-subtitle{margin:0}
+.s-product-card-price{margin-top:auto}
+.s-product-card-content-footer{margin-top:10px}
+.s-button-btn{width:100%;border:0;display:flex;align-items:center;justify-content:center;gap:8px}
+.s-product-card-promotion-title{position:absolute;z-index:2}
+.s-product-card-wishlist-btn{position:absolute;top:12px;inset-inline-end:12px;width:36px;height:36px;display:grid;place-items:center;border:0;z-index:2}
+.s-product-card-wishlist-btn svg{width:18px;height:18px;color:#425548}
+.ph{width:100%;height:100%;display:grid;place-items:center;background:#f4efe6;color:#9aa39c;font-size:13px;text-align:center}
+.ph div{display:grid;gap:10px;place-items:center}
+.ph img{width:90px;opacity:.35}
+.s-block{padding:28px 0}
+.s-block__title{display:flex;justify-content:space-between;align-items:end}
+.s-block__title h2{margin:0}
+.cats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.cat{background:#fff;border:1px solid #e6ded1;border-radius:18px;padding:14px 10px;text-align:center;font-family:var(--zad-head);font-weight:700;color:#425548;font-size:14px;transition:.2s}
+.cat:hover{border-color:#b88458}
+.cat .ci{width:64px;height:64px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:#f4efe6}
+.cat .ci img{width:100%;height:100%;object-fit:cover}
+.breadcrumbs{padding:20px 0;font-size:13px}
+.breadcrumbs span{margin:0 6px;opacity:.5}
+/* صفحة المنتج */
+.pd{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:start}
+.gallery .main-img{aspect-ratio:1/1;overflow:hidden;border-radius:18px;background:#f4efe6}
+.gallery .main-img img{width:100%;height:100%;object-fit:cover}
+.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+.thumbs div{aspect-ratio:1/1;border-radius:12px;overflow:hidden;border:1px solid #e6ded1;background:#f4efe6}
+.thumbs div.on{border:2px solid #425548}
+.thumbs img{width:100%;height:100%;object-fit:cover}
+.pd-info h1{margin:0 0 6px}
+.pd-info .product-entry__sub-title{line-height:1.9}
+.pd-meta{display:flex;align-items:center;gap:12px;margin:10px 0 16px;flex-wrap:wrap}
+.pd-price{font-size:26px}
+.pd-chip{display:inline-flex;gap:6px;align-items:center;background:#fff;border:1px solid #e6ded1;border-radius:999px;padding:6px 12px;font-size:12.5px;color:#6b756e}
+.pd-chip i{width:8px;height:8px;border-radius:50%;background:#7aa37f;display:inline-block}
+.s-product-options-option-label{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.opt-num{width:26px;height:26px;border-radius:50%;background:#f4efe6;color:#b88458;display:grid;place-items:center;font-size:13px}
+.s-product-options-option-content{display:flex;flex-wrap:wrap;gap:8px}
+.s-product-options-option-content input{position:absolute;opacity:0;pointer-events:none}
+.s-product-options-option-content label{display:inline-flex;align-items:center;justify-content:center;padding:0 20px;cursor:pointer;font-weight:600;font-size:14px}
+.auth{display:flex;gap:12px;align-items:flex-start;cursor:pointer;line-height:1.8;font-size:14px}
+.auth input{width:20px;height:20px;margin-top:4px;accent-color:#425548;flex:none}
+.s-product-options-textarea{width:100%;min-height:96px;padding:12px 14px;font:inherit;resize:vertical}
+.opt-hint{display:flex;justify-content:space-between;font-size:12.5px;color:#6b756e;margin-top:6px}
+.buy-row{display:flex;gap:12px;align-items:center;margin-top:6px}
+.s-quantity-input-container{display:flex;align-items:center;border:1px solid;height:48px;background:#fff}
+.s-quantity-input-button{width:42px;height:100%;border:0;background:none;font-size:20px}
+.s-quantity-input-input{width:40px;text-align:center;border:0;font:inherit;font-weight:700;background:none}
+.buy-row .s-button-btn{flex:1}
+.desc{margin-top:22px;padding-top:18px;border-top:1px solid #e6ded1}
+.desc h3{font-family:var(--zad-head);color:#425548;font-size:16px;margin:0 0 8px}
+.desc p{color:#6b756e;line-height:2;margin:0}
+.sticky-buy{display:none}
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,20px);background:#2e3a33;color:#f4efe6;padding:12px 20px;border-radius:999px;font-size:14px;opacity:0;transition:.3s;z-index:90;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+/* صفحات */
+.content--single-page{max-width:880px;margin:16px auto 0;padding:34px}
+.content--single-page>h1{margin:0 0 22px}
+/* فوتر */
+.store-footer{margin-top:40px}
+.store-footer__inner{padding:64px 0 40px}
+.ft{display:grid;grid-template-columns:2fr 1fr 1fr 1.2fr;gap:30px}
+.ft img{height:48px;width:auto;margin-bottom:14px}
+.ft p{line-height:1.9;margin:0;font-size:14px;opacity:.85}
+.ft ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:14px}
+.pay{display:flex;gap:8px;flex-wrap:wrap}
+.pay span{background:rgba(244,239,230,.1);border:1px solid rgba(244,239,230,.15);border-radius:8px;padding:6px 10px;font-size:12px}
+.copy{padding:16px 0;font-size:12.5px;opacity:.7;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.page{display:none}
+.page.on{display:block}
+.mob-menu{display:none}
+@media (max-width:1023px){
+  .main-menu,.top-navbar .tn-links{display:none}
+  .burger{display:grid}
+  .main-nav-container .row{height:64px}
+  .navbar-brand{position:absolute;left:50%;transform:translateX(-50%)}
+  .grid-products{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .cats{grid-template-columns:repeat(3,1fr)}
+  .pd{grid-template-columns:1fr;gap:20px}
+  .ft{grid-template-columns:1fr 1fr}
+  .ft>div:first-child{grid-column:1/-1}
+  .sticky-buy{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e6ded1;padding:10px 16px calc(10px + env(safe-area-inset-bottom));gap:12px;align-items:center;z-index:40;box-shadow:0 -8px 24px -16px rgba(46,58,51,.3)}
+  .sticky-buy .p{font-family:var(--zad-head);color:#425548;font-weight:800;font-size:18px;white-space:nowrap}
+  .sticky-buy .s-button-btn{flex:1}
+  .is-product main{padding-bottom:90px}
+  .content--single-page{padding:22px}
+  .top-navbar .header-search{max-width:none}
+}
+@media (max-width:480px){
+  .container{padding:0 14px}
+  .pd-price{font-size:22px}
+  .s-product-options-option-content label{padding:0 14px;font-size:13.5px}
+  .s-product-options-option-content{display:grid;grid-template-columns:repeat(2,1fr)}
+  .ft{grid-template-columns:1fr}
+}
+</style>
+<link rel="stylesheet" href="zad-custom.css">
+</head>
+<body class="theme-raed footer-is-dark">
+
+<header class="store-header">
+  <div class="top-navbar"><div class="container">
+    <div class="tn-links"><a href="#about">من نحن</a><a href="#policy">سياسة الاستبدال</a><a href="#faq">الأسئلة الشائعة</a></div>
+    <div class="header-search"><input class="s-search-input" placeholder="ابحث عن هدية…"></div>
+  </div></div>
+  <div class="main-nav-container"><div class="inner"><div class="container"><div class="row">
+    <div style="display:flex;align-items:center;gap:30px">
+      <button class="icon-btn burger" aria-label="القائمة" onclick="document.body.classList.toggle('menu-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
+      <a class="navbar-brand" href="#home"><img src="img/logo-olive.svg" alt="زاد الضيف"></a>
+      <ul class="main-menu">
+        <li><a href="#home">الرئيسية</a></li>
+        <li><a href="#shop">كل الهدايا</a></li>
+        <li><a href="#shop">تمور ومياه</a></li>
+        <li><a href="#shop">مصاحف ومستلزمات</a></li>
+        <li><a href="#about">من نحن</a></li>
+      </ul>
+    </div>
+    <div class="nav-icons">
+      <a class="icon-btn" href="#home" aria-label="حسابي"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></a>
+      <a class="icon-btn" href="#home" aria-label="السلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="s-cart-summary-count" id="cartCount">0</span></a>
+    </div>
+  </div></div></div></div>
+  <nav class="mob-menu" id="mobMenu">
+    <a href="#home">الرئيسية</a><a href="#shop">كل الهدايا</a><a href="#about">من نحن</a><a href="#policy">سياسة الاستبدال</a><a href="#faq">الأسئلة الشائعة</a>
+  </nav>
+</header>
+
+<main id="main-content">
+
+<!-- ========== الرئيسية ========== -->
+<section class="page" data-page="home">
+  <div class="zad-home">
+    <section class="zad-section container"><div class="zad-hero"><div>
+      <span class="zad-hero__eyebrow"><i></i>نوصلها لضيوف الرحمن نيابة عنك</span>
+      <h2>هدايا تقدم بمحبة</h2>
+      <p>اختر الهدية واكتب الاسم أو الإهداء، وفريقنا يجهزها ويوزعها في الحرم ويوثقها لك بالفيديو على واتساب</p>
+      <div class="zad-hero__actions"><a class="zad-btn zad-btn--solid" href="#shop">تصفح الهدايا</a><a class="zad-btn zad-btn--ghost" href="#home" onclick="setTimeout(()=>document.getElementById('zad-how').scrollIntoView({behavior:'smooth'}),30)">كيف ننفذ طلبك</a></div>
+    </div><div class="zad-hero__media"><img src="img/gift-box.jpg" alt="بوكس زاد الضيف"></div></div></section>
+
+    <section class="zad-section container" style="padding-top:0"><div class="zad-trust"><div class="zad-trust__item"><div class="zad-trust__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="M16 10.5 21 8v8l-5-2.5"/></svg></div><div><b>توثيق بالفيديو</b><span>يوصلك على واتساب</span></div></div><div class="zad-trust__item"><div class="zad-trust__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg></div><div><b>باسم من تحب</b><span>اسم أو إهداء على الطلب</span></div></div><div class="zad-trust__item"><div class="zad-trust__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"/><path d="M9 8h6M9 12h6"/></svg></div><div><b>فاتورة إلكترونية</b><span>لكل طلب</span></div></div><div class="zad-trust__item"><div class="zad-trust__icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10" width="14" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><div><b>دفع آمن</b><span>مدى وApple Pay والبطاقات</span></div></div></div></section>
+  </div>
+
+  <section class="s-block container">
+    <div class="s-block__title"><h2>تسوق حسب الهدية</h2></div>
+    <div class="cats">
+      <a class="cat" href="#shop"><div class="ci"><img src="img/water.jpg" alt=""></div>سقيا ماء</a>
+      <a class="cat" href="#shop"><div class="ci"><img src="img/dates.jpg" alt=""></div>تمور</a>
+      <a class="cat" href="#shop"><div class="ci"><img src="img/meal.jpg" alt=""></div>وجبات</a>
+      <a class="cat" href="#shop"><div class="ci"><img src="img/miswak.jpg" alt=""></div>مساويك</a>
+      <a class="cat" href="#shop"><div class="ci"><img src="img/gift-box.jpg" alt=""></div>بوكسات</a>
+      <a class="cat" href="#shop"><div class="ci"><img src="img/bag.jpg" alt=""></div>هدايا</a>
+    </div>
+  </section>
+
+  <section class="s-block container">
+    <div class="s-block__title"><h2>الأكثر طلباً</h2><a href="#shop">عرض الكل ←</a></div>
+    <div class="grid-products"><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><span class="s-product-card-promotion-title">الأكثر طلباً</span><img src="img/water.jpg" alt="سقيا ماء" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">سقيا ماء</a></h3><p class="s-product-card-content-subtitle">كرتون مياه لضيوف الرحمن</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/dates.jpg" alt="تمر الضيافة" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">تمر الضيافة</a></h3><p class="s-product-card-content-subtitle">علبة تمر باسمك أو باسم من تحب</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><span class="s-product-card-promotion-title">جديد</span><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">مصحف باسم من تحب</a></h3><p class="s-product-card-content-subtitle">مصحف مع كتابة الاسم</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/meal.jpg" alt="وجبة إفطار" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">وجبة إفطار</a></h3><p class="s-product-card-content-subtitle">وجبة متكاملة مرتبة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div></div>
+  </section>
+
+  <section class="zad-section container" id="zad-how"><div class="zad-head"><h3>ثلاث خطوات وتوصل هديتك</h3></div><div class="zad-steps">
+    <div class="zad-step"><b>اختر الهدية والعدد</b><p>تمر أو ماء أو وجبة أو مصحف وغيرها، وحدد الكمية اللي تناسبك</p></div>
+    <div class="zad-step"><b>اكتب الاسم أو الإهداء</b><p>نكتبه على الطلب كما هو، فراجع الإملاء قبل الدفع</p></div>
+    <div class="zad-step"><b>نجهز ونوزع ونوثق</b><p>نسلمها لضيوف الرحمن ويوصلك مقطع التوثيق على واتساب</p></div>
+  </div></section>
+
+  <section class="s-block container">
+    <div class="s-block__title"><h2>وصل حديثاً</h2><a href="#shop">عرض الكل ←</a></div>
+    <div class="grid-products"><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/gift-box.jpg" alt="بوكس الضيافة" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">بوكس الضيافة</a></h3><p class="s-product-card-content-subtitle">تمر ومسواك وسبحة ومصلية</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/miswak.jpg" alt="مسواك الضيف" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">مسواك الضيف</a></h3><p class="s-product-card-content-subtitle">مسواك مغلف بعناية</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">سجادة صلاة</a></h3><p class="s-product-card-content-subtitle">رفيقة الصلاة والسكينة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">كرسي صلاة قابل للطي</a></h3><p class="s-product-card-content-subtitle">راحة أثناء الصلاة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div></div>
+  </section>
+
+  <section class="zad-section container"><div class="zad-band"><div><h3>محتار وش تختار؟</h3><p>كلمنا على واتساب ونساعدك تختار الهدية والكمية المناسبة</p></div><a class="zad-btn" href="#home">تواصل معنا</a></div></section>
+</section>
+
+<!-- ========== كل المنتجات ========== -->
+<section class="page" data-page="shop">
+  <div class="container">
+    <nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span>كل الهدايا</nav>
+    <div class="s-block__title" style="margin-bottom:22px"><h2>كل الهدايا</h2></div>
+    <div class="grid-products"><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><span class="s-product-card-promotion-title">الأكثر طلباً</span><img src="img/water.jpg" alt="سقيا ماء" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">سقيا ماء</a></h3><p class="s-product-card-content-subtitle">كرتون مياه لضيوف الرحمن</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/dates.jpg" alt="تمر الضيافة" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">تمر الضيافة</a></h3><p class="s-product-card-content-subtitle">علبة تمر باسمك أو باسم من تحب</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/meal.jpg" alt="وجبة إفطار" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">وجبة إفطار</a></h3><p class="s-product-card-content-subtitle">وجبة متكاملة مرتبة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/miswak.jpg" alt="مسواك الضيف" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">مسواك الضيف</a></h3><p class="s-product-card-content-subtitle">مسواك مغلف بعناية</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><span class="s-product-card-promotion-title">جديد</span><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">مصحف باسم من تحب</a></h3><p class="s-product-card-content-subtitle">مصحف مع كتابة الاسم</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/gift-box.jpg" alt="بوكس الضيافة" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">بوكس الضيافة</a></h3><p class="s-product-card-content-subtitle">تمر ومسواك وسبحة ومصلية</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">سجادة صلاة</a></h3><p class="s-product-card-content-subtitle">رفيقة الصلاة والسكينة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">كرسي صلاة قابل للطي</a></h3><p class="s-product-card-content-subtitle">راحة أثناء الصلاة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div></div>
+  </div>
+</section>
+
+<!-- ========== صفحة المنتج ========== -->
+<section class="page" data-page="product">
+  <div class="container">
+    <nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span><a href="#shop">كل الهدايا</a><span>›</span>تمر الضيافة</nav>
+    <div class="pd container--product-details">
+      <div class="gallery">
+        <div class="main-img"><img id="mainImg" src="img/dates.jpg" alt="تمر الضيافة"></div>
+        <div class="thumbs">
+          <div class="on" data-src="img/dates.jpg"><img src="img/dates.jpg" alt=""></div>
+          <div data-src="img/gift-box.jpg"><img src="img/gift-box.jpg" alt=""></div>
+          <div data-src="img/bag.jpg"><img src="img/bag.jpg" alt=""></div>
+          <div data-src="img/meal.jpg"><img src="img/meal.jpg" alt=""></div>
+        </div>
+      </div>
+      <div class="pd-info">
+        <h1>تمر الضيافة</h1>
+        <p class="product-entry__sub-title" style="margin:0">علبة تمر فاخرة تقدم لضيوف الرحمن باسمك أو باسم من تحب</p>
+        <div class="pd-meta">
+          <span class="pd-price total-price">٠٠ ر.س</span>
+          <span class="pd-chip"><i></i>توثيق بالفيديو على واتساب</span>
+        </div>
+        <form class="product-form" onsubmit="return false">
+          <div class="s-product-options-option-container">
+            <div class="s-product-options-option-label"><span class="opt-num">١</span><b>عدد القطع</b><span class="s-product-options-field-required">*</span></div>
+            <div class="s-product-options-option-content">
+              <input type="radio" name="qty" id="q10" checked><label for="q10">١٠ حبات</label>
+              <input type="radio" name="qty" id="q20"><label for="q20">٢٠ حبة</label>
+              <input type="radio" name="qty" id="q50"><label for="q50">٥٠ حبة</label>
+              <input type="radio" name="qty" id="q100"><label for="q100">١٠٠ حبة</label>
+            </div>
+          </div>
+          <div class="s-product-options-option-container">
+            <div class="s-product-options-option-label"><span class="opt-num">٢</span><b>تفويض زاد الضيف</b><span class="s-product-options-field-required">*</span></div>
+            <label class="auth"><input type="checkbox" checked>أفوض متجر زاد الضيف بتجهيز هذا الطلب وتسليمه لضيوف الرحمن نيابة عني وفق وصف المنتج وسياسة التنفيذ</label>
+          </div>
+          <div class="s-product-options-option-container">
+            <div class="s-product-options-option-label"><span class="opt-num">٣</span><b>الاسم أو عبارة الإهداء</b><span class="s-product-options-field-required">*</span></div>
+            <textarea class="s-product-options-textarea" id="ded" maxlength="120" placeholder="مثال: عن والدي محمد رحمه الله"></textarea>
+            <div class="opt-hint"><span>راجع الإملاء قبل الإضافة للسلة</span><span id="dedCount">0 / 120</span></div>
+          </div>
+          <div class="zad-exec"><b>كيف ننفذ طلبك</b><ol>
+            <li><span>١</span>نستلم طلبك والاسم أو الإهداء كما كتبته</li>
+            <li><span>٢</span>نجهز الهدية ونسلمها لضيوف الرحمن في الحرم</li>
+            <li><span>٣</span>نرسل لك مقطع التوثيق على واتساب</li>
+          </ol><small>بعد بدء التجهيز ما يمكن تعديل الاسم أو إلغاء الطلب — <a href="#policy" style="color:#b88458;text-decoration:underline">سياسة الاستبدال والاسترجاع</a></small></div>
+          <div class="buy-row">
+            <div class="s-quantity-input-container"><button class="s-quantity-input-button" type="button" data-q="1">+</button><input class="s-quantity-input-input" id="qty" value="1" readonly><button class="s-quantity-input-button" type="button" data-q="-1">−</button></div>
+            <button class="s-button-btn s-button-primary btn--add-to-cart" type="button" data-add>أضف للسلة</button>
+          </div>
+        </form>
+        <div class="desc"><h3>عن المنتج</h3><p>تمر مختار بعناية في علبة مرتبة تليق بالضيف، يجهز ويوزع على ضيوف الرحمن في الحرم مع كتابة الاسم أو الإهداء اللي تختاره</p></div>
+      </div>
+    </div>
+    <section class="s-block" style="padding-top:44px">
+      <div class="s-block__title"><h2>هدايا ممكن تعجبك</h2></div>
+      <div class="grid-products"><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/gift-box.jpg" alt="بوكس الضيافة" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">بوكس الضيافة</a></h3><p class="s-product-card-content-subtitle">تمر ومسواك وسبحة ومصلية</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><img src="img/miswak.jpg" alt="مسواك الضيف" loading="lazy"></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">مسواك الضيف</a></h3><p class="s-product-card-content-subtitle">مسواك مغلف بعناية</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">سجادة صلاة</a></h3><p class="s-product-card-content-subtitle">رفيقة الصلاة والسكينة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div><div class="s-product-card-entry"><a href="#product" class="s-product-card-image"><div class="ph"><div><img src="img/logo-olive.svg" alt="">صورة المنتج</div></div></a><button class="s-product-card-wishlist-btn" aria-label="المفضلة"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10Z"/></svg></button><div class="s-product-card-content"><h3 class="s-product-card-content-title"><a href="#product">كرسي صلاة قابل للطي</a></h3><p class="s-product-card-content-subtitle">راحة أثناء الصلاة</p><div class="s-product-card-price">٠٠ ر.س</div><div class="s-product-card-content-footer"><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div></div></div></div>
+    </section>
+  </div>
+  <div class="sticky-buy"><span class="p">٠٠ ر.س</span><button class="s-button-btn s-button-primary" type="button" data-add>أضف للسلة</button></div>
+</section>
+
+<!-- ========== الصفحات التعريفية ========== -->
+<section class="page" data-page="about"><div class="container"><nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span>من نحن</nav><div class="content content--single-page"><h1>من نحن</h1><div class="content-entry"><p>زاد الضيف متجر سعودي إلكتروني يقدم هدايا ومنتجات مختارة، ونجهزها ونوصلها لضيوف الرحمن في الحرم نيابة عنك، باسمك أو باسم من تحب</p>
+
+<div class="zad-grid">
+  <div class="zad-tile"><b>هدايا مختارة بعناية</b>تمور ومياه ووجبات ومصاحف ومستلزمات صلاة بتغليف يليق بالضيف</div>
+  <div class="zad-tile"><b>باسمك أو باسم من تحب</b>نكتب الاسم أو عبارة الإهداء على طلبك كما تكتبها</div>
+  <div class="zad-tile"><b>توثيق بالفيديو</b>يوصلك مقطع التوثيق على واتساب بعد التنفيذ</div>
+</div>
+
+<h2>كيف نشتغل</h2>
+<ul>
+  <li>تختار الهدية والعدد من المتجر وتكتب الاسم أو الإهداء</li>
+  <li>تفوضنا بتجهيز الطلب وتسليمه لضيوف الرحمن نيابة عنك</li>
+  <li>نجهز الطلب ونوزعه ونرسل لك التوثيق</li>
+</ul>
+
+<h2>وضوح وشفافية</h2>
+<ul>
+  <li>زاد الضيف متجر لبيع الهدايا والمنتجات وتوصيلها، ولا يستقبل التبرعات أو يجمعها</li>
+  <li>أسعار كل المنتجات معلنة في المتجر، وتصدر لك فاتورة إلكترونية مع كل طلب</li>
+</ul>
+
+<p>شكراً لاختياركم زاد الضيف</p>
+</div></div></div></section>
+<section class="page" data-page="policy"><div class="container"><nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span>سياسة الاستبدال والاسترجاع</nav><div class="content content--single-page"><h1>سياسة الاستبدال والاسترجاع</h1><div class="content-entry"><p>في زاد الضيف نبغى تجربتك واضحة من أول خطوة. طلباتنا تُجهز وتُسلم لضيوف الرحمن نيابة عنك وفق تفاصيل طلبك، لذلك تعتمد إمكانية الإلغاء والاسترجاع على مرحلة تنفيذ الطلب</p>
+
+<div class="zad-note"><b>باختصار:</b> تقدر تلغي وتسترد المبلغ كامل ما دام طلبك ما بدأ تجهيزه. بعد بدء التجهيز أو التوزيع ما يمكن الإلغاء أو الاسترجاع إلا إذا كان الخطأ منا</div>
+
+<h2>١. إلغاء الطلب قبل التنفيذ</h2>
+<ul>
+  <li>يحق لك طلب الإلغاء واسترداد المبلغ كاملاً ما دام الطلب لم يدخل مرحلة التجهيز أو التوزيع</li>
+  <li>تواصل معنا على واتساب مع رقم الطلب، ونأكد لك حالة الطلب قبل الإلغاء</li>
+</ul>
+
+<h2>٢. بعد بدء التجهيز أو التوزيع</h2>
+<ul>
+  <li>إذا بدأ تجهيز الطلب أو توزيعه على ضيوف الرحمن فلا يمكن إلغاؤه أو استرداد قيمته، لأن الخدمة تُنفذ وتُسلم نيابة عنك</li>
+</ul>
+
+<h2>٣. الطلبات المخصصة بالاسم أو الإهداء</h2>
+<ul>
+  <li>المنتجات اللي يُكتب عليها اسم أو عبارة إهداء تُجهز خصيصاً لك، فلا يمكن إلغاؤها أو استبدالها بعد بدء تجهيزها</li>
+  <li>يُكتب الاسم أو الإهداء كما أدخلته في الطلب، فراجع الإملاء قبل إتمام الدفع</li>
+  <li>لا يمكن تعديل الاسم أو الإهداء بعد إتمام الدفع إذا بدأ التجهيز</li>
+</ul>
+
+<h2>٤. المواد الغذائية والمياه</h2>
+<ul>
+  <li>التمور والوجبات والمياه منتجات تُجهز وتوزع بسرعة، فلا تقبل الاستبدال أو الاسترجاع بعد بدء تجهيزها</li>
+</ul>
+
+<h2>٥. إذا كان الخطأ من جهتنا</h2>
+<p>إذا نُفذ الطلب بمنتج مختلف أو بكمية أقل أو بطريقة لا تطابق طلبك، تواصل معنا مع رقم الطلب وسنراجع الحالة ونقدم لك أحد الحلول التالية حسب الحالة:</p>
+<ul>
+  <li>إعادة تنفيذ الطلب بالشكل الصحيح</li>
+  <li>استرداد قيمة الطلب كاملة أو الجزء المتأثر منه</li>
+</ul>
+
+<h2>٦. تأخر التنفيذ</h2>
+<ul>
+  <li>إذا تعذر تنفيذ طلبك خلال المدة الموضحة في صفحة المنتج، نتواصل معك ونعرض عليك موعد تنفيذ جديد أو إلغاء الطلب مع استرداد المبلغ</li>
+</ul>
+
+<h2>٧. طريقة ومدة الاسترداد</h2>
+<ul>
+  <li>يُعاد المبلغ المعتمد إلى نفس وسيلة الدفع اللي استخدمتها</li>
+  <li>مدة ظهور المبلغ في حسابك تعتمد على البنك أو مزود الدفع</li>
+</ul>
+
+<h2>٨. التواصل</h2>
+<p>لأي طلب إلغاء أو ملاحظة على التنفيذ تواصل معنا على واتساب مع رقم الطلب وتفاصيل الملاحظة</p>
+
+<div class="zad-note">تخضع جميع حالات الاستبدال والاسترجاع والاسترداد للأنظمة المعمول بها في المملكة العربية السعودية، ولا تخل هذه السياسة بأي حق نظامي للمستهلك</div>
+</div></div></div></section>
+<section class="page" data-page="execution"><div class="container"><nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span>سياسة التنفيذ والتوثيق</nav><div class="content content--single-page"><h1>سياسة التنفيذ والتوثيق</h1><div class="content-entry"><p>توضح هذه الصفحة كيف ننفذ طلبك ونسلمه لضيوف الرحمن نيابة عنك</p>
+
+<h2>١. التفويض</h2>
+<ul>
+  <li>عند إتمام الطلب فأنت تفوض زاد الضيف بتجهيز المنتجات وتسليمها لضيوف الرحمن نيابة عنك وفق وصف المنتج وهذه السياسة</li>
+  <li>لا يحتاج الطلب عنوان شحن لأن التسليم يتم في الحرم</li>
+</ul>
+
+<h2>٢. التجهيز والتوزيع</h2>
+<ul>
+  <li>نجهز الطلب بالكمية والمنتج المختار، مع الاسم أو الإهداء إذا كان المنتج يدعم ذلك</li>
+  <li>يتم التوزيع خلال المدة الموضحة في صفحة المنتج، وإذا تعذر ذلك نتواصل معك قبل أي إجراء</li>
+  <li>قد تُوزع الطلبات ذات الكميات الكبيرة على أكثر من دفعة لضمان وصولها بشكل منظم</li>
+</ul>
+
+<h2>٣. التوثيق</h2>
+<ul>
+  <li>نرسل لك مقطع توثيق التنفيذ على رقم الجوال المسجل في الطلب عبر واتساب</li>
+  <li>تأكد من صحة رقم الجوال، وإذا ما وصلك التوثيق تواصل معنا مع رقم الطلب</li>
+  <li>نحرص في التصوير على احترام خصوصية ضيوف الرحمن وعدم إظهار وجوههم قدر الإمكان</li>
+</ul>
+
+<h2>٤. الاسم والإهداء</h2>
+<ul>
+  <li>يُكتب الاسم أو الإهداء كما أدخلته في خانة الطلب دون تعديل منا</li>
+  <li>نحتفظ بحق عدم كتابة أي عبارة غير لائقة أو مخالفة للأنظمة، ونتواصل معك لتعديلها</li>
+</ul>
+
+<p>للاطلاع على حالات الإلغاء والاسترداد راجع صفحة سياسة الاستبدال والاسترجاع</p>
+</div></div></div></section>
+<section class="page" data-page="privacy"><div class="container"><nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span>سياسة الخصوصية</nav><div class="content content--single-page"><h1>سياسة الخصوصية</h1><div class="content-entry"><p>نحترم خصوصيتك ونستخدم بياناتك فقط لتنفيذ طلبك وخدمتك</p>
+
+<h2>البيانات اللي نجمعها</h2>
+<ul>
+  <li>الاسم ورقم الجوال والبريد الإلكتروني عند الطلب</li>
+  <li>الاسم أو عبارة الإهداء اللي تكتبها على الطلب</li>
+  <li>بيانات الطلب وسجل المشتريات</li>
+</ul>
+
+<h2>كيف نستخدمها</h2>
+<ul>
+  <li>تنفيذ الطلب وكتابة الاسم أو الإهداء</li>
+  <li>إرسال مقطع التوثيق وتحديثات الطلب على واتساب</li>
+  <li>إصدار الفاتورة الإلكترونية والرد على استفساراتك</li>
+</ul>
+
+<h2>الدفع</h2>
+<ul>
+  <li>تتم عمليات الدفع عبر بوابات دفع منصة سلة الآمنة، ولا نطلع على بيانات بطاقتك ولا نحتفظ بها</li>
+</ul>
+
+<h2>مشاركة البيانات</h2>
+<ul>
+  <li>لا نبيع بياناتك ولا نشاركها مع أي طرف، إلا بالقدر اللازم لتنفيذ الطلب أو عند طلب جهة رسمية مختصة</li>
+</ul>
+
+<h2>حقوقك</h2>
+<ul>
+  <li>تقدر تطلب تحديث بياناتك أو حذف حسابك بالتواصل معنا</li>
+</ul>
+</div></div></div></section>
+<section class="page" data-page="terms"><div class="container"><nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span>الشروط والأحكام</nav><div class="content content--single-page"><h1>الشروط والأحكام</h1><div class="content-entry"><p>باستخدامك متجر زاد الضيف وإتمامك للطلب فأنت توافق على الشروط التالية</p>
+
+<h2>١. طبيعة المتجر</h2>
+<ul>
+  <li>زاد الضيف متجر إلكتروني لبيع الهدايا والمنتجات وتسليمها لضيوف الرحمن نيابة عن العميل</li>
+  <li>المتجر لا يستقبل التبرعات ولا يجمعها، وكل ما يُعرض فيه منتجات بأسعار معلنة</li>
+</ul>
+
+<h2>٢. الطلب والدفع</h2>
+<ul>
+  <li>الأسعار المعروضة شاملة ضريبة القيمة المضافة ما لم يُذكر غير ذلك</li>
+  <li>يُعتمد الطلب بعد إتمام الدفع وتصدر فاتورة إلكترونية له</li>
+  <li>العميل مسؤول عن صحة الاسم أو الإهداء ورقم الجوال المدخل في الطلب</li>
+</ul>
+
+<h2>٣. التنفيذ</h2>
+<ul>
+  <li>يتم التنفيذ وفق سياسة التنفيذ والتوثيق المنشورة في المتجر</li>
+  <li>صور المنتجات للتوضيح، وقد يختلف شكل التغليف أو العلامة التجارية للمنتج حسب التوفر مع الحفاظ على نفس الفئة والقيمة</li>
+</ul>
+
+<h2>٤. الإلغاء والاسترجاع</h2>
+<ul>
+  <li>تخضع لسياسة الاستبدال والاسترجاع المنشورة في المتجر</li>
+</ul>
+
+<h2>٥. أحكام عامة</h2>
+<ul>
+  <li>يحق للمتجر تحديث هذه الشروط، ويُعمل بالنسخة المنشورة وقت الطلب</li>
+  <li>تخضع هذه الشروط لأنظمة المملكة العربية السعودية</li>
+</ul>
+</div></div></div></section>
+<section class="page" data-page="faq"><div class="container"><nav class="breadcrumbs"><a href="#home">الرئيسية</a><span>›</span>الأسئلة الشائعة</nav><div class="content content--single-page"><h1>الأسئلة الشائعة</h1><div class="content-entry"><div class="zad-faq">
+  <details open><summary>كيف يوصل طلبي لضيوف الرحمن؟</summary><div>نجهز الطلب ونسلمه لضيوف الرحمن في الحرم نيابة عنك، ويوصلك مقطع التوثيق على واتساب</div></details>
+  <details><summary>هل أحتاج أكتب عنوان شحن؟</summary><div>لا، التسليم يتم في الحرم فما تحتاج عنوان</div></details>
+  <details><summary>متى يوصلني التوثيق؟</summary><div>بعد تنفيذ الطلب خلال المدة الموضحة في صفحة المنتج، على رقم الجوال المسجل في الطلب</div></details>
+  <details><summary>أقدر أكتب اسم شخص متوفى أو عبارة إهداء؟</summary><div>نعم، اكتب الاسم أو العبارة في خانة الإهداء ونكتبها كما هي، فراجع الإملاء قبل الدفع</div></details>
+  <details><summary>أقدر أعدل الاسم بعد الدفع؟</summary><div>إذا ما بدأ التجهيز تواصل معنا بسرعة على واتساب، وبعد بدء التجهيز ما يمكن التعديل</div></details>
+  <details><summary>أقدر ألغي طلبي؟</summary><div>نعم ما دام الطلب ما بدأ تجهيزه، ويرجع لك المبلغ على نفس وسيلة الدفع</div></details>
+  <details><summary>وش طرق الدفع المتاحة؟</summary><div>طرق الدفع المفعلة في المتجر تظهر لك في صفحة إتمام الطلب</div></details>
+  <details><summary>هل تستقبلون تبرعات؟</summary><div>لا، زاد الضيف متجر لبيع الهدايا والمنتجات وتوصيلها بأسعار معلنة وفاتورة إلكترونية</div></details>
+</div>
+</div></div></div></section>
+
+</main>
+
+<footer class="store-footer">
+  <div class="store-footer__inner"><div class="container ft">
+    <div>
+      <img src="img/logo-ivory.svg" alt="زاد الضيف">
+      <p>هدايا تقدم بمحبة، نجهزها ونوصلها لضيوف الرحمن نيابة عنك</p>
+      <p class="zad-legal">السجل التجاري: ـــــــ<br>موثق في المركز السعودي للأعمال: ـــــــ<br>متجر لبيع الهدايا والمنتجات وتوصيلها، ولا نستقبل تبرعات</p>
+    </div>
+    <div><h3>روابط مهمة</h3><ul><li><a href="#about">من نحن</a></li><li><a href="#policy">سياسة الاستبدال والاسترجاع</a></li><li><a href="#execution">سياسة التنفيذ والتوثيق</a></li><li><a href="#privacy">سياسة الخصوصية</a></li><li><a href="#terms">الشروط والأحكام</a></li><li><a href="#faq">الأسئلة الشائعة</a></li></ul></div>
+    <div><h3>تواصل معنا</h3><ul><li>واتساب: ـــــــ</li><li>البريد: ـــــــ</li></ul></div>
+    <div><h3>طرق الدفع</h3><div class="pay"><span>مدى</span><span>Apple Pay</span><span>Visa</span><span>Mastercard</span></div></div>
+  </div></div>
+  <div class="container copy"><span>جميع الحقوق محفوظة لـ زاد الضيف</span><span>متجر على منصة سلة</span></div>
+</footer>
+
+<a class="zad-wa" href="#home" aria-label="واتساب"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.7.3-.2.3-.9.9-.9 2.2s.9 2.5 1 2.7c.1.2 1.8 2.8 4.4 3.9 1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg></a>
+<div class="toast" id="toast">تمت الإضافة للسلة</div>
+
+<style>
+.mob-menu{background:#fbf8f3;border-bottom:1px solid #e6ded1}
+.menu-open .mob-menu{display:grid}
+.mob-menu a{padding:14px 20px;border-top:1px solid #e6ded1;font-family:var(--zad-head);font-weight:700;color:#425548}
+@media (min-width:1024px){.menu-open .mob-menu{display:none}}
+</style>
+<script>
+(function(){
+  var pages=document.querySelectorAll('.page');
+  function show(){
+    var h=(location.hash||'#home').slice(1); if(!document.querySelector('[data-page="'+h+'"]')) h='home';
+    pages.forEach(function(p){p.classList.toggle('on',p.dataset.page===h)});
+    document.body.classList.toggle('is-product',h==='product');
+    document.body.classList.remove('menu-open');
+    window.scrollTo(0,0);
+    try{parent.postMessage({zadPage:h},'*')}catch(e){}
+  }
+  window.addEventListener('hashchange',show); show();
+  document.querySelectorAll('.thumbs div').forEach(function(t){t.onclick=function(){document.querySelectorAll('.thumbs div').forEach(function(x){x.classList.remove('on')});t.classList.add('on');document.getElementById('mainImg').src=t.dataset.src}});
+  var ded=document.getElementById('ded'),dc=document.getElementById('dedCount');
+  ded.oninput=function(){dc.textContent=ded.value.length+' / 120'};
+  var q=document.getElementById('qty');
+  document.querySelectorAll('[data-q]').forEach(function(b){b.onclick=function(){q.value=Math.max(1,(+q.value)+(+b.dataset.q))}});
+  var n=0,toast=document.getElementById('toast');
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-add]');if(!b)return;n++;document.getElementById('cartCount').textContent=n;toast.classList.add('show');setTimeout(function(){toast.classList.remove('show')},1600)});
+})();
+</script>
+</body>
+</html>
